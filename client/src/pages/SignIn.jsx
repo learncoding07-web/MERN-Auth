@@ -1,13 +1,17 @@
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { signInFailure, signInStart, signInSuccess } from '../redux/user/userSlice';
 const SignIn = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: ""
   });
+  const dispatch = useDispatch();
   const [error, setError] = useState({ emailError: "", passError: ""});
-  const [loading, setLoading] = useState(false);
+  const { loading } = useSelector((state) => state.user);
+  // const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(false);
 
   const navigate = useNavigate();
@@ -35,6 +39,7 @@ const SignIn = () => {
       const isValidated = await validateInputs();
       if(!isValidated) return;
       try {
+        dispatch(signInStart());
         const res = await fetch("/api/auth/signin", {
           method: "POST",
           headers: {
@@ -46,17 +51,17 @@ const SignIn = () => {
         const data = await res.json();
 
         if(data.status === false) {
-          setLoading(false);
+          dispatch(signInFailure());
           setDisabled(false);
           toast.error(data.message);
         } else {
           toast.success(data.message);
-          setLoading(true);
+          dispatch(signInSuccess(data));
           setDisabled(true);
           navigate("/");
         }
       } catch (error) {
-        setLoading(false);
+        dispatch(signInFailure());
         setDisabled(false);
         toast.error("Something Went Wrong");
         console.log("error in register", error);
