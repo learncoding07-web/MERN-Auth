@@ -17,6 +17,8 @@ const SignUp = () => {
   }
 
   /* to check for empty inputs */
+  let regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
   const validateInputs = () => {
     if(formData.name === "") {
       setError({...error,"nameError": "*Please enter name"});
@@ -24,7 +26,11 @@ const SignUp = () => {
     } else if(formData.email === "") {
       setError({...error,"emailError": "*Please enter email"});
       return false;
-    } else if(formData.password === "") {
+    } else if(!(formData.email.includes(regex))){
+      setError({...error,"emailError": "*Please enter valid email"});
+      return false;
+    } 
+    else if(formData.password === "") {
       setError({...error,"passError": "*Please enter password"});
       return false;
     }
@@ -103,7 +109,7 @@ const SignUp = () => {
         />
         <span className='bg-red-500 text-white'>{formData.password ? "" : error.passError}</span>
 
-        <button disabled={disabled} className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80' >{loading ? "Loading..." : "Sign Up"}</button>
+        <button disabled={disabled} className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80' >{loading ? "Loading..." : "Register"}</button>
       </form>
       <div className='flex space-x-2 '>
         <p>Have an account?</p>
